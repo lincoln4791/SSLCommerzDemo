@@ -38,7 +38,12 @@ class SubscriptionAdapter(var ctx: Context, var list: MutableList<ModelClass>) :
 
         btnSubscribe.setOnClickListener {
             val context = ctx as MainActivity
-            context.startTransaction(list[position].amount)
+            context.startTransaction(list[position].amount,list[position].durationType)
+        }
+
+        mainLayout.setOnClickListener {
+            val context = ctx as MainActivity
+            context.startTransaction(list[position].amount,list[position].durationType)
         }
 
         return mView
