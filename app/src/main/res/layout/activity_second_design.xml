@@ -4,8 +4,39 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/my_gradient"
     tools:context=".SecondDesign">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/primary"
+            android:elevation="10dp"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:titleTextColor="#f3f2e2">
+
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Subscription"
+                android:textColor="#fff"
+                android:textSize="17sp" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
 
 
     <androidx.constraintlayout.widget.Guideline
@@ -41,7 +72,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.05" />
+        app:layout_constraintGuide_percent="0.11" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -59,7 +90,7 @@
         android:layout_marginTop="5dp"
         android:fontFamily="@font/montserrat_regular"
         android:text="Get Premium"
-        android:textColor="@color/dark_yellow"
+        android:textColor="@color/primary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +105,7 @@
         android:layout_marginEnd="20dp"
         android:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has."
         android:textAlignment="center"
-        android:textColor="@color/white_o"
+        android:textColor="@color/black_off"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -121,7 +152,7 @@
                 android:gravity="center"
                 android:text="Unlimited Monthl;y Posts"
                 android:textAlignment="gravity"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16dp" />
 
         </LinearLayout>
@@ -149,7 +180,7 @@
                 android:gravity="start|center"
                 android:text="Personalized Activity Insights"
                 android:textAlignment="gravity"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16dp" />
 
         </LinearLayout>
@@ -177,7 +208,7 @@
                 android:gravity="start|center"
                 android:text="Advanced Promotion Tools"
                 android:textAlignment="gravity"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="16dp" />
 
         </LinearLayout>
@@ -193,7 +224,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat_regular"
         android:text="Choose A Plan"
-        android:textColor="@color/white"
+        android:textColor="@color/primary"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -204,7 +235,8 @@
         android:id="@+id/constraintLayout4"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -218,14 +250,16 @@
             app:layout_constraintGuide_percent="0.5" />
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialCardView2"
+            android:id="@+id/cv_monthly"
             android:layout_width="140dp"
             android:layout_height="170dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="@color/black_off"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/materialCardView3"
+            app:cardCornerRadius="4dp"
+            app:strokeWidth="2dp"
+            app:cardBackgroundColor="@color/primary"
+            app:strokeColor="@color/primary"
+            app:layout_constraintEnd_toStartOf="@+id/cv_yearly"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -244,7 +278,7 @@
                 tools:layout_editor_absoluteX="125dp">
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/tv_monthlyPlan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
@@ -259,7 +293,7 @@
 
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/tv_monthlyPlanAmount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_regular"
@@ -267,11 +301,22 @@
                     android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="26dp"
+                    android:layout_marginTop="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_check_monthly"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/check"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_monthlyPlanAmount" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -279,16 +324,17 @@
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/materialCardView3"
+            android:id="@+id/cv_yearly"
             android:layout_width="140dp"
             android:layout_height="170dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="@color/black_off"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:cardCornerRadius="4dp"
+            app:strokeWidth="2dp"
+            app:strokeColor="@color/primary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/materialCardView2"
+            app:layout_constraintStart_toEndOf="@+id/cv_monthly"
             app:layout_constraintTop_toTopOf="parent">
 
 
@@ -304,38 +350,81 @@
                 tools:layout_editor_absoluteX="125dp">
 
                 <TextView
-                    android:id="@+id/textView7"
+                    android:id="@+id/tv_yearlyPlan"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:fontFamily="@font/montserrat_regular"
                     android:text="Yearly Plan"
                     android:textAlignment="center"
-                    android:textColor="@color/white_o"
+                    android:textColor="@color/black_off"
                     android:textSize="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/tv_yearlyPlanAmountPrevious"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_regular"
+                    android:text="600 BDT"
+                    android:textAlignment="center"
+                    android:textColor="@color/black_off"
+                    android:textSize="23dp"
+                    app:layout_constraintBottom_toTopOf="@+id/tv_yearlyPlanAmount"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_yearlyPlan" />
+
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/tv_yearlyPlanAmount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_regular"
                     android:text="499 BDT"
                     android:textAlignment="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:textSize="26dp"
+                    android:layout_marginTop="5dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/iv_check_yearly"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/check"
+                    android:visibility="invisible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_yearlyPlanAmount"/>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_subscribe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="25dp"
+            android:text="Subscribe"
+            android:backgroundTint="@color/primary"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            app:cornerRadius="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/cv_yearly"
+            app:layout_constraintStart_toStartOf="@+id/cv_monthly"
+            app:layout_constraintTop_toBottomOf="@+id/cv_monthly" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
