@@ -8,10 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import com.example.myssslcommerzdemo.databinding.ActivitySecondDesignBinding
 import com.sslwireless.sslcommerzlibrary.model.response.SSLCTransactionInfoModel
 import com.sslwireless.sslcommerzlibrary.view.singleton.IntegrateSSLCommerz
@@ -55,6 +57,13 @@ class SecondDesign : AppCompatActivity() {
 
         amount = Constants.AMOUNT_MONTHLY
         plan = Constants.DURATION_TYPE_MONTHLY
+
+        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar!!.setDisplayShowHomeEnabled(true)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
+
 
     }
 
@@ -149,4 +158,15 @@ class SecondDesign : AppCompatActivity() {
                 }
             });
     }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        //return super.onOptionsItemSelected(item)
+        val key = item.itemId
+        if(key == android.R.id.home){
+            onBackPressed()
+        }
+        return false
+    }
+
 }

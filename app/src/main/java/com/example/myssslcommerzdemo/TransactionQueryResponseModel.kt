@@ -1,0 +1,31 @@
+package com.example.myssslcommerzdemo
+
+data class TransactionQueryResponseModel(
+    val APIConnect: String,
+    val amount: String,
+    val bank_tran_id: String,
+    val base_fair: String,
+    val card_brand: String,
+    val card_issuer: String,
+    val card_issuer_country: String,
+    val card_issuer_country_code: String,
+    val card_no: String,
+    val card_type: String,
+    val currency_amount: String,
+    val currency_rate: String,
+    val currency_type: String,
+    val gw_version: String,
+    val risk_level: String,
+    val risk_title: String,
+    val sessionkey: String,
+    val status: String,
+    val store_amount: String,
+    val tran_date: String,
+    val tran_id: String,
+    val val_id: String,
+    val validated_on: String,
+    val value_a: String,
+    val value_b: String,
+    val value_c: String,
+    val value_d: String
+)

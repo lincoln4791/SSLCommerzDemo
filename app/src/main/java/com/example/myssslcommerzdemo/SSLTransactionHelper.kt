@@ -36,9 +36,10 @@ object SSLTransactionHelper {
             amount,
             SSLCCurrencyType.BDT,
             transactionId,
-            "MyProductTypeDemo",
+            "MyProductTypeDem",
             SSLCSdkType.TESTBOX
         )
         return sslCommerzInitialization
     }
+
 }

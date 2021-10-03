@@ -18,5 +18,17 @@ class Constants {
         const val IS_LOGGED_IN = "is_logged_in"
 
 
+        const val IPN_BASE_URL = "https://sandbox.sslcommerz.com/"
+        var VAL_ID = "val_id"
+        var BANK_TRANS_ID = "bank_trans_id"
+        var TRANSECTED_AMOUNT = "transacted_amount"
+        var SESSION_KEY = "session_id"
+
+
+        var STORE_ID = "linco615047b39a651"
+        var STORE_PASS = "linco615047b39a651@ssl"
+
+
+
     }
 }
