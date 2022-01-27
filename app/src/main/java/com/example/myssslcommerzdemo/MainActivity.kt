@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
+import com.android.billingclient.api.*
 import com.example.myssslcommerzdemo.response_status.IPN_VALIDATIOR
 import com.example.myssslcommerzdemo.retrorfit.MyApi
 import com.sslwireless.sslcommerzlibrary.model.initializer.SSLCCustomerInfoInitializer
@@ -25,6 +26,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import com.sslwireless.sslcommerzlibrary.model.initializer.SSLCProductInitializer
 import com.sslwireless.sslcommerzlibrary.model.initializer.SSLCShipmentInfoInitializer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mAdapter : SubscriptionAdapter
     private lateinit var tvSubscriptionStatus : TextView
     private lateinit var btnStatus : Button
+
+
 
     lateinit var dialog :Dialog
     lateinit var view : View
@@ -62,6 +67,9 @@ class MainActivity : AppCompatActivity() {
 
         mAdapter = SubscriptionAdapter(this@MainActivity,list)
         viewPager.adapter=mAdapter
+
+
+
 
 
 
@@ -251,6 +259,9 @@ class MainActivity : AppCompatActivity() {
             )
         )
     }
+
+
+
 
 
 }

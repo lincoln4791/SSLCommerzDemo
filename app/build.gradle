@@ -6,11 +6,12 @@ plugins {
 android {
     compileSdk 31
     defaultConfig {
-        applicationId "com.example.myssslcommerzdemo"
+        //applicationId "com.example.myssslcommerzdemo"
+        applicationId "com.bloodFinder.mybloodbank"
         minSdk 21
         targetSdk 31
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -61,4 +62,9 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //G-Pay
+    //implementation "com.android.billingclient:billing:4.0.0"
+    implementation("com.android.billingclient:billing-ktx:4.0.0")
+    implementation 'com.anjlab.android.iab.v3:library:2.0.3'
 }

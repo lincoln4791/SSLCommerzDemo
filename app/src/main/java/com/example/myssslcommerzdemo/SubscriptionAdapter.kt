@@ -1,6 +1,7 @@
 package com.example.myssslcommerzdemo
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ class SubscriptionAdapter(var ctx: Context, var list: MutableList<ModelClass>) :
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        Log.d("tag","Instiatiet -> $position")
         //return super.instantiateItem(container, position)
         val mView = LayoutInflater.from(ctx).inflate(R.layout.sample_cardview,container,false)
         val mainLayout = mView.findViewById<CardView>(R.id.mainLayout_sample)
@@ -38,12 +40,15 @@ class SubscriptionAdapter(var ctx: Context, var list: MutableList<ModelClass>) :
 
         btnSubscribe.setOnClickListener {
             val context = ctx as MainActivity
+            Log.d("tag","clicked  -> $position")
             context.startTransaction(list[position].amount,list[position].durationType)
+
         }
 
         mainLayout.setOnClickListener {
             val context = ctx as MainActivity
             context.startTransaction(list[position].amount,list[position].durationType)
+            Log.d("tag","Clicked -> $position")
         }
 
         return mView
