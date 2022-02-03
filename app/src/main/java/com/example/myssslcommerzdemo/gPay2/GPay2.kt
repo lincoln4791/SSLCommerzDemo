@@ -3,6 +3,7 @@ package com.example.myssslcommerzdemo.gPay2
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import com.anjlab.android.iab.v3.BillingProcessor
 import com.anjlab.android.iab.v3.PurchaseInfo
@@ -25,7 +26,7 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
         billingProcessor.initialize()
 
         binding.btnSubscribe.setOnClickListener {
-            billingProcessor.subscribe(this,"test_subscription")
+            billingProcessor.subscribe(this,"test_subscription2")
         }
 
         binding.backToOneTimePurchase.setOnClickListener {
@@ -64,14 +65,16 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
 
         })
 
-        purchaseInfo = billingProcessor.getSubscriptionPurchaseInfo("test_subscription")
+        purchaseInfo = billingProcessor.getSubscriptionPurchaseInfo("test_subscription2")
 
         if(purchaseInfo!=null){
             if(purchaseInfo!!.purchaseData.autoRenewing){
+              binding.tv.text ="token -> ${purchaseInfo!!.purchaseData.purchaseToken} \npurchase date -> ${purchaseInfo!!.purchaseData.purchaseTime} " +
+                      "\n order id: ${purchaseInfo!!.purchaseData.orderId} \npurchase state name ${purchaseInfo!!.purchaseData.purchaseState.name}"
                 Toast.makeText(this@GPay2,"Already Subscribed",Toast.LENGTH_SHORT).show()
             }
             else{
-                Toast.makeText(this@GPay2,"Bot Subscribed",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@GPay2,"Not Subscribed",Toast.LENGTH_SHORT).show()
             }
         }
         else{

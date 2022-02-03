@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.android.billingclient.api.*
+import com.anjlab.android.iab.v3.BillingProcessor
+import com.anjlab.android.iab.v3.PurchaseInfo
 import com.example.myssslcommerzdemo.MainActivity
 import com.example.myssslcommerzdemo.R
 import com.example.myssslcommerzdemo.databinding.ActivityMyGooglePayDemoBinding
@@ -34,7 +36,6 @@ class MyGooglePayDemo : AppCompatActivity() {
         }
 
     private lateinit var billingClient : BillingClient
-
     val skuList : ArrayList<String> = arrayListOf<String>()
 
 
@@ -49,7 +50,8 @@ class MyGooglePayDemo : AppCompatActivity() {
             .enablePendingPurchases()
             .build()
 
-        skuList.add("test")
+        skuList.add("tes")
+        //skuList.add("test2")
 
 
 
@@ -105,4 +107,6 @@ class MyGooglePayDemo : AppCompatActivity() {
 
         // Process the result.
     }
+
+
 }
