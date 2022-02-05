@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.example.myssslcommerzdemo.databinding.ActivityGpayConversionSdkBinding
 import com.qonversion.android.sdk.*
+import com.qonversion.android.sdk.dto.QLaunchResult
 import com.qonversion.android.sdk.dto.QPermission
 import com.qonversion.android.sdk.dto.offerings.QOfferings
 import com.qonversion.android.sdk.dto.products.QProduct
@@ -37,6 +38,7 @@ class GPayConversionSDK : AppCompatActivity() {
 
 
         checkUserSubscriptionStatus()
+        launchQonversion()
 
 
     }
@@ -48,6 +50,9 @@ class GPayConversionSDK : AppCompatActivity() {
                 if (mainOffering != null && mainOffering.products.isNotEmpty()) {
                     // Display products for sale
                     Toast.makeText(this@GPayConversionSDK,"Products for sell",Toast.LENGTH_SHORT).show()
+
+                    makePurchase(mainOffering.products[0])
+
                 }
                 else{
                     Toast.makeText(this@GPayConversionSDK,"Null or empty , Products for sell",Toast.LENGTH_SHORT).show()
@@ -65,16 +70,12 @@ class GPayConversionSDK : AppCompatActivity() {
 
         Qonversion.offerings(object: QonversionOfferingsCallback {
             override fun onSuccess(offerings: QOfferings) {
-                val offering = offerings.offeringForID("test_subscription2")
+                val offering = offerings.offeringForID("test_subscription3")
                 if (offering != null) {
                     // offering is available
                     Toast.makeText(this@GPayConversionSDK,"get offering by id",Toast.LENGTH_SHORT).show()
 
-                    for(product in offering.products){
-
-                    }
-
-                    offering.products
+                    makePurchase(offering.products[0])
 
                 }
                 else{
@@ -95,7 +96,7 @@ class GPayConversionSDK : AppCompatActivity() {
             override fun onSuccess(products: Map<String, QProduct>) {
                 // handle available products here
                 Toast.makeText(this@GPayConversionSDK,"get List of available products",Toast.LENGTH_SHORT).show()
-                val prod =products["test_subscription2"]
+                val prod =products["test_subscription3"]
                 if(prod != null){
                     makePurchase(prod)
                 }
@@ -120,6 +121,8 @@ class GPayConversionSDK : AppCompatActivity() {
                 val premiumPermission = permissions["premium"]
                 if (premiumPermission != null && premiumPermission.isActive()) {
                     // handle active permission here
+
+
                 }
             }
 
@@ -135,22 +138,30 @@ class GPayConversionSDK : AppCompatActivity() {
         Qonversion.checkPermissions(object: QonversionPermissionsCallback {
             override fun onSuccess(permissions: Map<String, QPermission>) {
                 val premiumPermission = permissions["Premium"]
-                if (premiumPermission != null && premiumPermission.isActive()) {
+                if (premiumPermission != null) {
+
+                    if(premiumPermission.isActive()){
+                        when (premiumPermission.renewState) {
+                            QProductRenewState.NonRenewable -> Toast.makeText(this@GPayConversionSDK,"NonRenewable",Toast.LENGTH_SHORT).show()
+                            QProductRenewState.WillRenew -> Toast.makeText(this@GPayConversionSDK,"WillRenew",Toast.LENGTH_SHORT).show()
+                            // WillRenew is the state of an auto-renewable subscription
+                            // NonRenewable is the state of consumable/non-consumable IAPs that could unlock lifetime access
+                            QProductRenewState.BillingIssue -> Toast.makeText(this@GPayConversionSDK,"BillingIssue",Toast.LENGTH_SHORT).show()
+                            // Prompt the user to update the payment method.
+                            QProductRenewState.Canceled -> Toast.makeText(this@GPayConversionSDK,"Canceled",Toast.LENGTH_SHORT).show()
+                            // The user has turned off auto-renewal for the subscription, but the subscription has not expired yet.
+                            // Prompt the user to resubscribe with a special offer.
+                        }
+                    }
+                    else{
+                        Toast.makeText(this@GPayConversionSDK,"Premium Permission Not Active",Toast.LENGTH_SHORT).show()
+                    }
+
                     // handle active permission here
 
                     // also you can check renew state if needed
                     // for example to check if user has canceled subscription and offer him a discount
-                    when (premiumPermission.renewState) {
-                        QProductRenewState.NonRenewable -> Toast.makeText(this@GPayConversionSDK,"NonRenewable",Toast.LENGTH_SHORT).show()
-                        QProductRenewState.WillRenew -> Toast.makeText(this@GPayConversionSDK,"WillRenew",Toast.LENGTH_SHORT).show()
-                            // WillRenew is the state of an auto-renewable subscription
-                            // NonRenewable is the state of consumable/non-consumable IAPs that could unlock lifetime access
-                            QProductRenewState.BillingIssue -> Toast.makeText(this@GPayConversionSDK,"BillingIssue",Toast.LENGTH_SHORT).show()
-                        // Prompt the user to update the payment method.
-                        QProductRenewState.Canceled -> Toast.makeText(this@GPayConversionSDK,"Canceled",Toast.LENGTH_SHORT).show()
-                        // The user has turned off auto-renewal for the subscription, but the subscription has not expired yet.
-                        // Prompt the user to resubscribe with a special offer.
-                    }
+
                 }
                 else{
                     Toast.makeText(this@GPayConversionSDK,"permission null",Toast.LENGTH_SHORT).show()
@@ -169,10 +180,16 @@ class GPayConversionSDK : AppCompatActivity() {
         Qonversion.restore(object : QonversionPermissionsCallback {
             override fun onSuccess(permissions: Map<String, QPermission>) {
                 val premiumPermission = permissions["Premium"]
-                if (premiumPermission != null && premiumPermission.isActive()) {
-                    // handle active permission here
+                if (premiumPermission != null) {
 
-                    Toast.makeText(this@GPayConversionSDK,"Restore Previous Purchase",Toast.LENGTH_SHORT).show()
+                    if(premiumPermission.isActive()){
+                        Toast.makeText(this@GPayConversionSDK,"Restore Previous Purchase",Toast.LENGTH_SHORT).show()
+                    }
+                    else{
+                        Toast.makeText(this@GPayConversionSDK,"Not Active, Restore Previous Purchase",Toast.LENGTH_SHORT).show()
+                    }
+
+
 
                 }
                 else{
@@ -187,5 +204,25 @@ class GPayConversionSDK : AppCompatActivity() {
         })
 
     }
+
+    fun launchQonversion(){
+
+        Qonversion.launch(this.application, "AQeHY8I_d4OGV1Y6Qnoza4x2KeBxxwE1", false, object : QonversionLaunchCallback {
+            override fun onSuccess(launchResult: QLaunchResult) {
+                // print launchResult.uid
+                Toast.makeText(this@GPayConversionSDK,"Conversion UUID is -> ${launchResult.uid}",Toast.LENGTH_LONG).show()
+                Qonversion.setProperty(QUserProperties.CustomUserId, "thisIsMyId")
+                Toast.makeText(this@GPayConversionSDK,"customer ID UUID is -> ${QUserProperties.CustomUserId}",Toast.LENGTH_LONG).show()
+            }
+
+            override fun onError(error: QonversionError) {
+                Toast.makeText(this@GPayConversionSDK,"Error, Conversion UUID -> ${error.additionalMessage}",Toast.LENGTH_LONG).show()
+            }
+        })
+
+    }
+
+
+
 
 }
