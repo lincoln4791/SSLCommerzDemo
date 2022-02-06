@@ -13,16 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MySSSLCommerzDemo">
-        <activity
-            android:name=".GPayConversionSDK.GPayConversionSDK"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
+    <activity
             android:name=".SecondDesign"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -36,8 +28,20 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" />
+        <activity
+            android:name=".gPay2.GPay2"
+            android:exported="true"
+            android:screenOrientation="portrait"
             tools:ignore="LockedOrientationActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
         </activity>
+
     </application>
 
 </manifest>

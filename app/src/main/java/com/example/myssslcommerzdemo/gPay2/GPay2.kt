@@ -56,7 +56,6 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
         billingProcessor.loadOwnedPurchasesFromGoogleAsync(object : BillingProcessor.IPurchasesResponseListener{
             override fun onPurchasesSuccess() {
                 //Toast.makeText(this@GPay2,"Purchase Success",Toast.LENGTH_SHORT).show()
-
             }
 
             override fun onPurchasesError() {
@@ -76,6 +75,7 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
             else{
                 Toast.makeText(this@GPay2,"Not Subscribed",Toast.LENGTH_SHORT).show()
             }
+            binding.tv.text = purchaseInfo!!.responseData
         }
         else{
             Toast.makeText(this@GPay2,"Expired",Toast.LENGTH_SHORT).show()
