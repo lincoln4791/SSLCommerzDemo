@@ -139,15 +139,16 @@ class IAB_V4 : AppCompatActivity() {
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {}
             override fun onBillingSetupFinished(billingResult: BillingResult) {
+                Log.d("Billing","Set Up Finished")
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     finalBillingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS
                     ) { billingResult1: BillingResult, list: List<Purchase?> ->
                         //this "list" will contain all the sub purchases.
-                        if (billingResult1.responseCode == BillingClient.BillingResponseCode.OK && list.size > 0) {
+                        if (billingResult1.responseCode == BillingClient.BillingResponseCode.OK && list.isNotEmpty()) {
                             //list is more than 0 meaning there is an active subscription available
                             prefManager.isPremium = true
                             Toast.makeText(this@IAB_V4,"Premium",Toast.LENGTH_SHORT).show()
-                        } else if (list.size == 0) {
+                        } else if (list.isEmpty()) {
                             //When the list returns zero, it means there are no active subscription
                             prefManager.isPremium = false
                             Toast.makeText(this@IAB_V4,"Basic",Toast.LENGTH_SHORT).show()

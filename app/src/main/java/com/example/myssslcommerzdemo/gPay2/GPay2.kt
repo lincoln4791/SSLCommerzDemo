@@ -26,7 +26,7 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
         billingProcessor.initialize()
 
         binding.btnSubscribe.setOnClickListener {
-            billingProcessor.subscribe(this,"test_subscription2")
+            billingProcessor.subscribe(this,"test_subscription5")
         }
 
         binding.backToOneTimePurchase.setOnClickListener {
@@ -64,7 +64,7 @@ class GPay2 : AppCompatActivity(),BillingProcessor.IBillingHandler {
 
         })
 
-        purchaseInfo = billingProcessor.getSubscriptionPurchaseInfo("test_subscription2")
+        purchaseInfo = billingProcessor.getSubscriptionPurchaseInfo("test_subscription5")
 
         if(purchaseInfo!=null){
             if(purchaseInfo!!.purchaseData.autoRenewing){
