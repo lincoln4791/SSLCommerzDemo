@@ -14,16 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MySSSLCommerzDemo">
 
-        <activity android:name=".googlePayDemo.MyGooglePayDemo"
-            android:exported="true"
-            android:screenOrientation="portrait">
+
+        <activity android:name=".IABV4_Subscription.IAB_V4"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-    <activity
+        <activity
             android:name=".SecondDesign"
             android:exported="true"
             android:screenOrientation="portrait"

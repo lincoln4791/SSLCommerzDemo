@@ -2,12 +2,15 @@ package com.example.myssslcommerzdemo.IABV4_Subscription
 
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.*
 import com.example.myssslcommerzdemo.PrefManager
 import com.example.myssslcommerzdemo.R
 import com.example.myssslcommerzdemo.databinding.ActivityIabV4Binding
+import com.example.myssslcommerzdemo.model.SubscriptionInfoFromGoogle
+import com.google.gson.Gson
 
 
 class IAB_V4 : AppCompatActivity() {
@@ -38,7 +41,13 @@ class IAB_V4 : AppCompatActivity() {
         //start the connection after initializing the billing client
         establishConnection()
 
-        checkSubscription()
+        binding.btnMonthly.setOnClickListener {
+            initPurchase("test_subscription2")
+        }
+
+        binding.btn3month.setOnClickListener {
+            initPurchase("test_subscription3")
+        }
 
     }
 
@@ -47,6 +56,7 @@ class IAB_V4 : AppCompatActivity() {
             override fun onBillingSetupFinished(billingResult: BillingResult) {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
+                    checkSubscription()
                     showProducts()
                 }
             }
@@ -61,18 +71,24 @@ class IAB_V4 : AppCompatActivity() {
 
 
     fun showProducts() {
+        binding.btn3month.visibility = View.VISIBLE
+        binding.btnMonthly.visibility = View.VISIBLE
+    }
+
+    private fun initPurchase(productID : String) {
         val skuList: MutableList<String> = ArrayList()
-        skuList.add("test_subscription2")
+        skuList.add(productID)
         val params = SkuDetailsParams.newBuilder()
         params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
+
         billingClient.querySkuDetailsAsync(params.build()
         ) { billingResult, skuDetailsList ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && skuDetailsList != null) {
                 // Process the result.
                 for (skuDetails in skuDetailsList) {
-                    if (skuDetails.sku.equals("test_subscription2")) {
+                    if (skuDetails.sku == productID) {
                         //Now update the UI
-                        binding.subscribe.setOnClickListener { view -> launchPurchaseFlow(skuDetails) }
+                        launchPurchaseFlow(skuDetails)
                     }
                 }
             }
@@ -132,31 +148,24 @@ class IAB_V4 : AppCompatActivity() {
 
 
     fun checkSubscription() {
-        billingClient = BillingClient.newBuilder(this).enablePendingPurchases()
-            .setListener { billingResult: BillingResult?, list: List<Purchase?>? -> }
-            .build()
-        val finalBillingClient = billingClient
-        billingClient.startConnection(object : BillingClientStateListener {
-            override fun onBillingServiceDisconnected() {}
-            override fun onBillingSetupFinished(billingResult: BillingResult) {
-                Log.d("Billing","Set Up Finished")
-                if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                    finalBillingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS
-                    ) { billingResult1: BillingResult, list: List<Purchase?> ->
-                        //this "list" will contain all the sub purchases.
-                        if (billingResult1.responseCode == BillingClient.BillingResponseCode.OK && list.isNotEmpty()) {
-                            //list is more than 0 meaning there is an active subscription available
-                            prefManager.isPremium = true
-                            Toast.makeText(this@IAB_V4,"Premium",Toast.LENGTH_SHORT).show()
-                        } else if (list.isEmpty()) {
-                            //When the list returns zero, it means there are no active subscription
-                            prefManager.isPremium = false
-                            Toast.makeText(this@IAB_V4,"Basic",Toast.LENGTH_SHORT).show()
-                        }
+        billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS) { billingResult: BillingResult, purchases: MutableList<Purchase> ->
+            Log.d("Billing",
+                "Billing Result -> ${billingResult.responseCode} ::: Purchased Product Length- -> ${purchases.size}")
+            binding.tv.text = "Currenty active Subscription -> ${purchases.size} "
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+                Log.d("Billing", "Purchased Product Length -> ${purchases.size}")
+                for (purchase in purchases) {
+                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        val g = Gson()
+                        val purchaseInfo = g.fromJson(purchase.originalJson,
+                            SubscriptionInfoFromGoogle::class.java)
+                        Log.d("Billing",
+                            "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
                     }
                 }
             }
-        })
+        }
+
     }
 
 }

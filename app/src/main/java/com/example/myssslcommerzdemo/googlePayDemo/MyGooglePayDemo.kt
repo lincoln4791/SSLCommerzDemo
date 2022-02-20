@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import com.android.billingclient.api.*
 import com.anjlab.android.iab.v3.BillingProcessor
@@ -14,6 +15,11 @@ import com.example.myssslcommerzdemo.MainActivity
 import com.example.myssslcommerzdemo.R
 import com.example.myssslcommerzdemo.databinding.ActivityMyGooglePayDemoBinding
 import com.example.myssslcommerzdemo.gPay2.GPay2
+import com.example.myssslcommerzdemo.model.SubscriptionModelClass
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,6 +47,8 @@ class MyGooglePayDemo : AppCompatActivity() {
         }
 
     private lateinit var billingClient : BillingClient
+    private lateinit var firebaseRemoteConfig: FirebaseRemoteConfig
+    private var subscriptionData: SubscriptionModelClass? = null
 
     private lateinit var binding : ActivityMyGooglePayDemoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +60,8 @@ class MyGooglePayDemo : AppCompatActivity() {
             .setListener(purchasesUpdatedListener)
             .enablePendingPurchases()
             .build()
+
+       // initRemoteConfig()
 
         //skuList.add("test")
 
@@ -98,35 +108,7 @@ class MyGooglePayDemo : AppCompatActivity() {
         }
 
         binding.btnSubscribe.setOnClickListener {
-            billingClient.startConnection(object : BillingClientStateListener {
-                override fun onBillingSetupFinished(billingResult: BillingResult) {
-                    if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
-                        val skuList : ArrayList<String> = arrayListOf<String>()
-                        skuList.add("test_subscription4")
-                        // The BillingClient is ready. You can query purchases here.
-                        val params = SkuDetailsParams.newBuilder()
-                        params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
 
-                        // leverage querySkuDetails Kotlin extension function
-                        billingClient.querySkuDetailsAsync(params.build()){
-                                billingResult, mutableList->
-
-                            for(skuDetails in mutableList!!){
-                                val flowParams = BillingFlowParams.newBuilder()
-                                    .setSkuDetails(skuDetails)
-                                    .build()
-                                val responseCode = billingClient.launchBillingFlow(this@MyGooglePayDemo, flowParams).responseCode
-                            }
-
-                        }
-
-                    }
-                }
-                override fun onBillingServiceDisconnected() {
-                    // Try to restart the connection on the next request to
-                    // Google Play by calling the startConnection() method.
-                }
-            })
         }
 
     }
@@ -170,6 +152,73 @@ class MyGooglePayDemo : AppCompatActivity() {
 
         }
     }
+
+    fun startSubscriptionProcess(productID :String){
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(billingResult: BillingResult) {
+                if (billingResult.responseCode ==  BillingClient.BillingResponseCode.OK) {
+                    val skuList : ArrayList<String> = arrayListOf<String>()
+                    skuList.add(productID)
+                    // The BillingClient is ready. You can query purchases here.
+                    val params = SkuDetailsParams.newBuilder()
+                    params.setSkusList(skuList).setType(BillingClient.SkuType.SUBS)
+
+                    // leverage querySkuDetails Kotlin extension function
+                    billingClient.querySkuDetailsAsync(params.build()){
+                            billingResult, mutableList->
+
+                        for(skuDetails in mutableList!!){
+                            val flowParams = BillingFlowParams.newBuilder()
+                                .setSkuDetails(skuDetails)
+                                .build()
+                            val responseCode = billingClient.launchBillingFlow(this@MyGooglePayDemo, flowParams).responseCode
+                        }
+
+                    }
+
+                }
+            }
+            override fun onBillingServiceDisconnected() {
+                // Try to restart the connection on the next request to
+                // Google Play by calling the startConnection() method.
+            }
+        })
+    }
+
+
+
+/*    private fun initRemoteConfig() {
+        Log.d("tag","Remote Config Inited")
+        firebaseRemoteConfig = Firebase.remoteConfig
+        val configSettings  = remoteConfigSettings {
+            minimumFetchIntervalInSeconds = 3600
+        }
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings)
+        //firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_cofig_defaults)
+
+        //val cacheExpiration: Long = 3600 // 1 hour in seconds.
+
+        firebaseRemoteConfig.fetchAndActivate()
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val updated = task.result
+                    Log.d("Remote", "Config params updated: $updated")
+
+                    //subscriptionData = firebaseRemoteConfig.getString("iab_subscriptions")
+                    //Log.d("Remote","Data fetched -> ${firebaseRemoteConfig.getString("iab_subscriptions")} ")
+
+                    *//*   Toast.makeText(this, "Fetch and activate succeeded",
+                           Toast.LENGTH_SHORT).show()*//*
+                } else {
+                    Log.d("Remote", "fetch Failed")
+                    *//*  Toast.makeText(this, "Fetch failed",
+                          Toast.LENGTH_SHORT).show()*//*
+                }
+                //displayWelcomeMessage()
+            }
+
+
+    }*/
 
 
 }
