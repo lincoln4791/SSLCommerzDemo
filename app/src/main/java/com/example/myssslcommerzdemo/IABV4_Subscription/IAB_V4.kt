@@ -6,8 +6,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.*
+import com.android.billingclient.api.BillingFlowParams.ProrationMode.*
 import com.example.myssslcommerzdemo.PrefManager
-import com.example.myssslcommerzdemo.R
 import com.example.myssslcommerzdemo.databinding.ActivityIabV4Binding
 import com.example.myssslcommerzdemo.model.SubscriptionInfoFromGoogle
 import com.google.gson.Gson
@@ -16,6 +16,9 @@ import com.google.gson.Gson
 class IAB_V4 : AppCompatActivity() {
 
     private lateinit var billingClient : BillingClient
+    private var isSubscribed = false
+    private var previouslySubscribedProductID = ""
+    private var previouslySubscribedPurchaseToken = ""
     private lateinit var prefManager : PrefManager
 
     private lateinit var binding : ActivityIabV4Binding
@@ -57,13 +60,13 @@ class IAB_V4 : AppCompatActivity() {
                 if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                     // The BillingClient is ready. You can query purchases here.
                     checkSubscription()
-                    showProducts()
                 }
             }
 
             override fun onBillingServiceDisconnected() {
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
+                Log.d("Billing","Billing Connection Disconnected")
                 establishConnection()
             }
         })
@@ -96,11 +99,29 @@ class IAB_V4 : AppCompatActivity() {
     }
 
 
-    fun launchPurchaseFlow(skuDetails: SkuDetails?) {
-        val billingFlowParams = BillingFlowParams.newBuilder()
-            .setSkuDetails(skuDetails!!)
-            .build()
-        billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
+    private fun launchPurchaseFlow(skuDetails: SkuDetails?) {
+
+        if (isSubscribed) {
+            Log.d("Billing","Already Subscribed, It will Upgrade/ Downgrade now")
+            val subscriptionUpdatedParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder()
+                .setOldSkuPurchaseToken(previouslySubscribedPurchaseToken)
+                .setReplaceSkusProrationMode(IMMEDIATE_AND_CHARGE_FULL_PRICE).build()
+
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setSubscriptionUpdateParams(subscriptionUpdatedParams)
+                .setSkuDetails(skuDetails!!)
+                .build()
+            billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
+        } else {
+            Log.d("Billing","Not Subscribed, New Purchase")
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setSkuDetails(skuDetails!!)
+                .build()
+            billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
+        }
+
+
+
     }
 
 
@@ -153,19 +174,33 @@ class IAB_V4 : AppCompatActivity() {
                 "Billing Result -> ${billingResult.responseCode} ::: Purchased Product Length- -> ${purchases.size}")
             binding.tv.text = "Currenty active Subscription -> ${purchases.size} "
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-                Log.d("Billing", "Purchased Product Length -> ${purchases.size}")
-                for (purchase in purchases) {
-                    if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                        val g = Gson()
-                        val purchaseInfo = g.fromJson(purchase.originalJson,
-                            SubscriptionInfoFromGoogle::class.java)
-                        Log.d("Billing",
-                            "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
+
+                if(purchases.size>0){
+                    isSubscribed = true
+                    Log.d("Billing", "Purchased Product Length -> ${purchases.size}")
+                    for (purchase in purchases) {
+                        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                            val g = Gson()
+                            val purchaseInfo = g.fromJson(purchase.originalJson,
+                                SubscriptionInfoFromGoogle::class.java)
+                            previouslySubscribedProductID = purchaseInfo.productId
+                            previouslySubscribedPurchaseToken = purchaseInfo.purchaseToken
+                            Log.d("Billing",
+                                "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
+                        }
                     }
                 }
+                else{
+                    Log.d("Billing","Purchase Size is 0 or less")
+                }
+
+                showProducts()
+
+            }
+            else{
+                Log.d("Billing","Purchase Maybe NUll or billing client is not ok")
             }
         }
-
     }
 
 }

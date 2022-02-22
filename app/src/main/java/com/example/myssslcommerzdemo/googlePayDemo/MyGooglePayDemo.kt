@@ -49,6 +49,7 @@ class MyGooglePayDemo : AppCompatActivity() {
     private lateinit var billingClient : BillingClient
     private lateinit var firebaseRemoteConfig: FirebaseRemoteConfig
     private var subscriptionData: SubscriptionModelClass? = null
+    private var isAlreadySubscribed = false
 
     private lateinit var binding : ActivityMyGooglePayDemoBinding
     override fun onCreate(savedInstanceState: Bundle?) {
