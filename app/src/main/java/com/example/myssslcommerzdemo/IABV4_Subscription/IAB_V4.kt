@@ -1,6 +1,8 @@
 package com.example.myssslcommerzdemo.IABV4_Subscription
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -61,13 +63,16 @@ class IAB_V4 : AppCompatActivity() {
                     // The BillingClient is ready. You can query purchases here.
                     checkSubscription()
                 }
+                else{
+                    Log.d("Billing","billing result -> ${billingResult.responseCode}")
+                }
             }
 
             override fun onBillingServiceDisconnected() {
                 // Try to restart the connection on the next request to
                 // Google Play by calling the startConnection() method.
                 Log.d("Billing","Billing Connection Disconnected")
-                establishConnection()
+                //establishConnection()
             }
         })
     }
@@ -100,22 +105,25 @@ class IAB_V4 : AppCompatActivity() {
 
 
     private fun launchPurchaseFlow(skuDetails: SkuDetails?) {
-
         if (isSubscribed) {
             Log.d("Billing","Already Subscribed, It will Upgrade/ Downgrade now")
             val subscriptionUpdatedParams = BillingFlowParams.SubscriptionUpdateParams.newBuilder()
                 .setOldSkuPurchaseToken(previouslySubscribedPurchaseToken)
-                .setReplaceSkusProrationMode(IMMEDIATE_AND_CHARGE_FULL_PRICE).build()
+                .setReplaceSkusProrationMode(DEFERRED).build()
 
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSubscriptionUpdateParams(subscriptionUpdatedParams)
                 .setSkuDetails(skuDetails!!)
+                .setObfuscatedProfileId("Lincoln's Profile")
+                .setObfuscatedAccountId("Lincoln's Account")
                 .build()
             billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
         } else {
             Log.d("Billing","Not Subscribed, New Purchase")
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(skuDetails!!)
+                .setObfuscatedProfileId("Lincoln's Profile")
+                .setObfuscatedAccountId("Lincoln's Account")
                 .build()
             billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
         }
@@ -136,14 +144,15 @@ class IAB_V4 : AppCompatActivity() {
                 //Toast.makeText(SubscriptionActivity.this, "Item Consumed", Toast.LENGTH_SHORT).show();
                 // Handle the success of the consume operation.
                 //user prefs to set premium
-                Toast.makeText(this@IAB_V4, "You are a premium user now", Toast.LENGTH_SHORT)
-                    .show()
+               /* Toast.makeText(this@IAB_V4, "You are a premium user now", Toast.LENGTH_SHORT)
+                    .show()*/
                 //updateUser();
 
                 //Setting premium to 1
                 // 1 - premium
                 //0 - no premium
                 prefManager.isPremium = true
+                Log.d("Billing","Billing Acknowledged")
             }
         }
         Log.d("tag", "Purchase Token: " + purchases.purchaseToken)
@@ -154,7 +163,7 @@ class IAB_V4 : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        billingClient.queryPurchasesAsync(
+  /*      billingClient.queryPurchasesAsync(
             BillingClient.SkuType.SUBS
         ) { billingResult, list ->
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
@@ -164,7 +173,7 @@ class IAB_V4 : AppCompatActivity() {
                     }
                 }
             }
-        }
+        }*/
     }
 
 
@@ -172,7 +181,6 @@ class IAB_V4 : AppCompatActivity() {
         billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS) { billingResult: BillingResult, purchases: MutableList<Purchase> ->
             Log.d("Billing",
                 "Billing Result -> ${billingResult.responseCode} ::: Purchased Product Length- -> ${purchases.size}")
-            binding.tv.text = "Currenty active Subscription -> ${purchases.size} "
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
 
                 if(purchases.size>0){
@@ -185,6 +193,10 @@ class IAB_V4 : AppCompatActivity() {
                                 SubscriptionInfoFromGoogle::class.java)
                             previouslySubscribedProductID = purchaseInfo.productId
                             previouslySubscribedPurchaseToken = purchaseInfo.purchaseToken
+                            Handler(Looper.getMainLooper()).post{
+                                binding.tv.text = "Currenty active Subscription -> ${purchaseInfo.productId} "
+                            }
+                            //Log.d("Billing","Account Identifiers: profile-> -> ${purchase.accountIdentifiers!!.obfuscatedProfileId}, account -> ${purchase.accountIdentifiers!!.obfuscatedAccountId}} ")
                             Log.d("Billing",
                                 "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
                         }
@@ -194,13 +206,14 @@ class IAB_V4 : AppCompatActivity() {
                     Log.d("Billing","Purchase Size is 0 or less")
                 }
 
-                showProducts()
+
 
             }
             else{
                 Log.d("Billing","Purchase Maybe NUll or billing client is not ok")
             }
         }
+        showProducts()
     }
 
 }
