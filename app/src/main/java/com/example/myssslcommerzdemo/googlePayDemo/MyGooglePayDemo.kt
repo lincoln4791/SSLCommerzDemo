@@ -43,7 +43,6 @@ class MyGooglePayDemo : AppCompatActivity() {
             else{
                 Toast.makeText(this@MyGooglePayDemo,"Something Went Wrong In Purchase",Toast.LENGTH_SHORT).show()
             }
-
         }
 
     private lateinit var billingClient : BillingClient

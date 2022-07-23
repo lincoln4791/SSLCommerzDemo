@@ -8,7 +8,7 @@
         <entry key="app/src/main/res/font/myfont.xml" value="0.358974358974359" />
         <entry key="app/src/main/res/layout/activity_gpay2.xml" value="0.334375" />
         <entry key="app/src/main/res/layout/activity_gpay_conversion_sdk.xml" value="0.33489583333333334" />
-        <entry key="app/src/main/res/layout/activity_iab_v4.xml" value="0.33489583333333334" />
+        <entry key="app/src/main/res/layout/activity_iab_v4.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.16822916666666668" />
         <entry key="app/src/main/res/layout/activity_my_google_pay_demo.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_paid_user.xml" value="0.31927083333333334" />

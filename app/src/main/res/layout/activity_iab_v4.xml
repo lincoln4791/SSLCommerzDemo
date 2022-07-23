@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".IABV4_Subscription.IAB_V4">
 
+
+    <Button
+        android:id="@+id/btn_reloadActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reload Activity"
+        app:layout_constraintBottom_toTopOf="@+id/tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/btn_monthly"
         android:layout_width="wrap_content"

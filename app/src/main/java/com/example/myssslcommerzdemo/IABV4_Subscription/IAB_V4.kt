@@ -1,5 +1,6 @@
 package com.example.myssslcommerzdemo.IABV4_Subscription
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingFlowParams.ProrationMode.*
 import com.example.myssslcommerzdemo.PrefManager
+import com.example.myssslcommerzdemo.Util
 import com.example.myssslcommerzdemo.databinding.ActivityIabV4Binding
 import com.example.myssslcommerzdemo.model.SubscriptionInfoFromGoogle
 import com.google.gson.Gson
@@ -54,6 +56,11 @@ class IAB_V4 : AppCompatActivity() {
             initPurchase("test_subscription3")
         }
 
+        binding.btnReloadActivity.setOnClickListener {
+            finish()
+            startActivity(Intent(this@IAB_V4,IAB_V4::class.java))
+        }
+
     }
 
     fun establishConnection() {
@@ -64,6 +71,7 @@ class IAB_V4 : AppCompatActivity() {
                     checkSubscription()
                 }
                 else{
+                    establishConnection()
                     Log.d("Billing","billing result -> ${billingResult.responseCode}")
                 }
             }
@@ -76,7 +84,6 @@ class IAB_V4 : AppCompatActivity() {
             }
         })
     }
-
 
     fun showProducts() {
         binding.btn3month.visibility = View.VISIBLE
@@ -103,7 +110,6 @@ class IAB_V4 : AppCompatActivity() {
         }
     }
 
-
     private fun launchPurchaseFlow(skuDetails: SkuDetails?) {
         if (isSubscribed) {
             Log.d("Billing","Already Subscribed, It will Upgrade/ Downgrade now")
@@ -114,16 +120,16 @@ class IAB_V4 : AppCompatActivity() {
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSubscriptionUpdateParams(subscriptionUpdatedParams)
                 .setSkuDetails(skuDetails!!)
-                .setObfuscatedProfileId("Lincoln's Profile")
-                .setObfuscatedAccountId("Lincoln's Account")
+                .setObfuscatedProfileId(Util.getMD5FromString("Lincoln's Profile"))
+                .setObfuscatedAccountId(Util.getMD5FromString("Lincoln's Account"))
                 .build()
             billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
         } else {
             Log.d("Billing","Not Subscribed, New Purchase")
             val billingFlowParams = BillingFlowParams.newBuilder()
                 .setSkuDetails(skuDetails!!)
-                .setObfuscatedProfileId("Lincoln's Profile")
-                .setObfuscatedAccountId("Lincoln's Account")
+                .setObfuscatedProfileId(Util.getMD5FromString("Lincoln's Profile"))
+                .setObfuscatedAccountId(Util.getMD5FromString("Lincoln's Account"))
                 .build()
             billingClient.launchBillingFlow(this@IAB_V4, billingFlowParams)
         }
@@ -131,7 +137,6 @@ class IAB_V4 : AppCompatActivity() {
 
 
     }
-
 
     fun verifySubPurchase(purchases: Purchase) {
         val acknowledgePurchaseParams = AcknowledgePurchaseParams
@@ -160,7 +165,6 @@ class IAB_V4 : AppCompatActivity() {
         Log.d("tag", "Purchase OrderID: " + purchases.orderId)
     }
 
-
     override fun onResume() {
         super.onResume()
   /*      billingClient.queryPurchasesAsync(
@@ -176,41 +180,42 @@ class IAB_V4 : AppCompatActivity() {
         }*/
     }
 
-
     fun checkSubscription() {
         billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS) { billingResult: BillingResult, purchases: MutableList<Purchase> ->
             Log.d("Billing",
                 "Billing Result -> ${billingResult.responseCode} ::: Purchased Product Length- -> ${purchases.size}")
-            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
-
-                if(purchases.size>0){
-                    isSubscribed = true
-                    Log.d("Billing", "Purchased Product Length -> ${purchases.size}")
-                    for (purchase in purchases) {
-                        if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
-                            val g = Gson()
-                            val purchaseInfo = g.fromJson(purchase.originalJson,
-                                SubscriptionInfoFromGoogle::class.java)
-                            previouslySubscribedProductID = purchaseInfo.productId
-                            previouslySubscribedPurchaseToken = purchaseInfo.purchaseToken
-                            Handler(Looper.getMainLooper()).post{
-                                binding.tv.text = "Currenty active Subscription -> ${purchaseInfo.productId} "
+            if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                Log.d("Billing"," BillingResult Debug Message is -> ${billingResult.debugMessage} ")
+                if(purchases!=null){
+                    if(purchases.size>0){
+                        isSubscribed = true
+                        Log.d("Billing", "Purchased Product Length -> ${purchases.size}")
+                        for (purchase in purchases) {
+                            if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                                val g = Gson()
+                                val purchaseInfo = g.fromJson(purchase.originalJson,
+                                    SubscriptionInfoFromGoogle::class.java)
+                                previouslySubscribedProductID = purchaseInfo.productId
+                                previouslySubscribedPurchaseToken = purchaseInfo.purchaseToken
+                                Handler(Looper.getMainLooper()).post{
+                                    binding.tv.text = "Currenty active Subscription -> ${purchaseInfo.productId} "
+                                }
+                                Log.d("Billing","Account Identifiers: profile-> -> ${purchase.accountIdentifiers!!.obfuscatedProfileId}, account -> ${purchase.accountIdentifiers!!.obfuscatedAccountId}} ")
+                                Log.d("Billing",
+                                    "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
                             }
-                            //Log.d("Billing","Account Identifiers: profile-> -> ${purchase.accountIdentifiers!!.obfuscatedProfileId}, account -> ${purchase.accountIdentifiers!!.obfuscatedAccountId}} ")
-                            Log.d("Billing",
-                                "Purchased Products are -> ${purchase.purchaseToken}::: product id -> ${purchaseInfo.productId}")
                         }
+                    }
+                    else{
+                        Log.d("Billing","Purchase Size is 0 or less")
                     }
                 }
                 else{
-                    Log.d("Billing","Purchase Size is 0 or less")
+                    Log.d("Billing","Purchasees is null")
                 }
-
-
-
             }
             else{
-                Log.d("Billing","Purchase Maybe NUll or billing client is not ok")
+                Log.d("Billing","Purchase billing client is not ok")
             }
         }
         showProducts()
